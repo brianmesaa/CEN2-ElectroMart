@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="shortcut icon" type="image/x-icon" href="Pictures/ElectroMart.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ElectroMart - Search</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="homepage">
+  <!-- NAVBAR -->
+  <nav class="navbar" id="web-menu">
+    <div class="navbar_container">
+      <a href="index.html" id="navbar_logo">
+        <img src="Pictures/ElectroMart.png" class="logo" alt="ElectroMart Logo" />
+      </a>
+      <div class="navbar_toggle" id="mobile-menu">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+      </div>
+      <ul class="navbar_menu">
+        <li class="navbar_item">
+          <a href="search.html" class="navbar_link">Search</a>
+        </li>
+        <li class="navbar_item">
+          <a href="profile.html" class="navbar_link">Profile</a>
+        </li>
+        <li class="navbar_item">
+          <a href="shoppingCart.html" class="navbar_link">Shopping Cart</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- MAIN SEARCH PAGE CONTENT -->
+  <div class="homeContainer1">
+    <h1>Search / Categories</h1>
+  </div>
+
+  <div class="products-container">
+    <h2>Laptops</h2>
+    <div class="product-card">
+      <h3>Ultrabook</h3>
+      <p>Price: $900</p>
+      <button 
+        class="add-to-cart-btn" 
+        data-product-name="Ultrabook" 
+        data-product-price="900"
+      >
+        Add to Cart
+      </button>
+    </div>
+
+    <div class="product-card">
+      <h3>Business Laptop</h3>
+      <p>Price: $1000</p>
+      <button 
+        class="add-to-cart-btn" 
+        data-product-name="Business Laptop" 
+        data-product-price="1000"
+      >
+        Add to Cart
+      </button>
+    </div>
+  </div>
+
+  <div class="products-container">
+    <h2>TVs</h2>
+    <div class="product-card">
+      <h3>4K TV</h3>
+      <p>Price: $600</p>
+      <button 
+        class="add-to-cart-btn" 
+        data-product-name="4K TV" 
+        data-product-price="600"
+      >
+        Add to Cart
+      </button>
+    </div>
+
+    <div class="product-card">
+      <h3>OLED TV</h3>
+      <p>Price: $1200</p>
+      <button 
+        class="add-to-cart-btn" 
+        data-product-name="OLED TV" 
+        data-product-price="1200"
+      >
+        Add to Cart
+      </button>
+    </div>
+  </div>
+
+  <div class="products-container">
+    <h2>Speakers</h2>
+    <div class="product-card">
+      <h3>Bluetooth Speaker</h3>
+      <p>Price: $50</p>
+      <button 
+        class="add-to-cart-btn" 
+        data-product-name="Bluetooth Speaker" 
+        data-product-price="50"
+      >
+        Add to Cart
+      </button>
+    </div>
+
+    <div class="product-card">
+      <h3>Soundbar</h3>
+      <p>Price: $200</p>
+      <button 
+        class="add-to-cart-btn" 
+        data-product-name="Soundbar" 
+        data-product-price="200"
+      >
+        Add to Cart
+      </button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
