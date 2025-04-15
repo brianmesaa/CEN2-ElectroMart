@@ -219,6 +219,7 @@ button {
   margin: 0 auto;
   border-collapse: collapse;
   background-color: #fff;
+  margin-top: 1rem;
 }
 
 .cart-table th,
@@ -240,6 +241,48 @@ button {
   font-size: 1.2rem;
   font-weight: bold;
 }
+
+#payBtn {
+  background-color: #4ddde0;
+  color: #333;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+#payBtn:hover {
+  background-color: #35b9b9;
+  color: #fff;
+}
+
+#cartItems {
+  background-color: #4ddde0;
+  color: #333;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.form-container {
+  background-color: #4ddde0;
+}
+
+#confirmPaymentBtn {
+  background-color: black;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+#confirmPaymentBtn:hover {
+  background-color: gray;
+  color: #fff;
+}
+
 
 /* 10. category tv page*/
 
