@@ -208,6 +208,36 @@ button {
   border-radius: 4px;
 }
 
+
+/*Profile page*/
+#loginBtn {
+  background-color: black;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+#loginBtn:hover {
+  background-color: gray;
+  color: #fff;
+}
+
+#logoutBtn {
+  background-color: #4ddde0;
+  color: #333;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+#logoutBtn:hover {
+  background-color: #35b9b9;
+  color: #fff;
+}
+
 /* 8. CART PAGE */
 .cart-container {
   padding: 2rem;
