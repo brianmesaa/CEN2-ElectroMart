@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <link rel="shortcut icon" href="Pictures/ElectroMart.png" type="image/x-icon" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ElectroMart - Home</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body class="homepage">
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="navbar_container">
+            <a href="index.html" id="navbar_logo">
+                <img src="Pictures/ElectroMart.png" class="logo" alt="ElectroMart Logo" />
+            </a>
+            <!-- Hamburger icon for mobile -->
+            <div class="navbar_toggle" id="mobile-menu">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+            <!-- Main nav links -->
+            <ul class="navbar_menu">
+                <li class="navbar_item">
+                    <!-- Trigger that opens a small “mega menu”/overlay for categories -->
+                    <a href="#" class="navbar_link" id="categoriesLink">Categories</a>
+                </li>
+                <li class="navbar_item">
+                    <a href="profile.html" class="navbar_link">Profile</a>
+                </li>
+                <li class="navbar_item">
+                    <a href="shoppingCart.html" class="navbar_link">Shopping Cart</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- OVERLAY for categories (small window) -->
+    <div id="categoriesOverlay" class="overlay">
+        <button class="closeOverlayBtn" id="closeOverlayBtn">&times;</button>
+        <h2>Shop by Category</h2>
+        <ul>
+            <li><a href="category-laptops.html">Laptops</a></li>
+            <li><a href="category-tvs.html">TVs</a></li>
+            <li><a href="category-speakers.html">Speakers</a></li>
+            <!-- Add more categories here if you like -->
+        </ul>
+    </div>
+
+    <!-- MAIN HOMEPAGE CONTENT -->
+    <div class="homeContainer1">
+        <h1>Welcome to ElectroMart!</h1>
+        <p>Your one-stop shop for electronics.</p>
+    </div>
+
+    <!-- FEATURED PRODUCTS -->
+    <div class="products-container">
+        <h2 class="mainTitle">Speakers</h2>
+
+        <div class="product-card">
+            <img class="tvImg" src="Pictures/led-tv.jpg" alt="">
+            <h3>Insignia Led TV</h3>
+            <p>Price: $300</p>
+            <button class="add-to-cart-btn" data-product-name="Insignia Led TV" data-product-price="300">Add to
+                Cart</button>
+        </div>
+
+        <div class="product-card">
+            <img class="tvImg" src="Pictures/oled-tv.jpg" alt="">
+            <h3>LG Oled C4</h3>
+            <p>Price: $1000</p>
+            <button class="add-to-cart-btn" data-product-name="LG Oled C4" data-product-price="1000">Add to
+                Cart</button>
+        </div>
+
+        <div class="product-card">
+            <img class="tvImg" src="Pictures/sonybravia9.jpg" alt="">
+            <h3>Sony Bravia 9 Mini Led</h3>
+            <p>Price: $2000</p>
+            <button class="add-to-cart-btn" data-product-name="Sony Bravia 9 Mini Led" data-product-price="2000">Add to
+                Cart</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
