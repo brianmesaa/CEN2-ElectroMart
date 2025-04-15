@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <link rel="shortcut icon" href="Pictures/ElectroMart.png" type="image/x-icon" />
@@ -7,6 +8,7 @@
   <title>Profile | ElectroMart</title>
   <link rel="stylesheet" href="style.css" />
 </head>
+
 <body class="homepage">
   <!-- NAVBAR -->
   <nav class="navbar">
@@ -63,10 +65,10 @@
 
     <!-- PROFILE INFO (hidden if user not logged in) -->
     <div id="userProfile" style="display: none;">
-      <h2>Welcome, <span id="userEmailDisplay"></span>!</h2>
-      <p>Here you can manage your personal info, check past purchases, etc.</p>
+      <h2 class="mainTitle">Welcome, <span id="userEmailDisplay"></span>!</h2>
+      <p class="mainTitle">Here you can manage your personal info, check past purchases, etc.</p>
 
-      <div id="pastPurchases">
+      <div class="mainTitle id=" pastPurchases">
         <h3>Past Purchases</h3>
         <table class="cart-table" id="purchasesTable">
           <thead>
@@ -89,4 +91,5 @@
 
   <script src="app.js"></script>
 </body>
+
 </html>
