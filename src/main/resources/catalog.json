@@ -1,0 +1,20 @@
+{
+  "products": [
+    { "id": "msi-gaming-laptop",        "name": "MSI Gaming Laptop",         "priceCents": 100000, "stock": 10 },
+    { "id": "noise-canceling-headphones","name": "Noise-Canceling Headphones","priceCents": 35000,  "stock": 25 },
+    { "id": "smartwatch",               "name": "Smartwatch",                "priceCents": 15000,  "stock": 40 },
+    { "id": "ultrabook",                "name": "Ultrabook",                 "priceCents": 90000,  "stock": 12 },
+    { "id": "business-laptop",          "name": "Business Laptop",           "priceCents": 100000, "stock": 15 },
+    { "id": "samsung-laptop",           "name": "Samsung Laptop",            "priceCents": 60000,  "stock": 14 },
+    { "id": "microsoft-surface-laptop", "name": "Microsoft Surface Laptop",  "priceCents": 120000, "stock": 9 },
+    { "id": "4k-tv",                    "name": "4K TV",                     "priceCents": 60000,  "stock": 20 },
+    { "id": "oled-tv",                  "name": "OLED TV",                   "priceCents": 120000, "stock": 8 },
+    { "id": "insignia-led-tv",          "name": "Insignia Led TV",           "priceCents": 30000,  "stock": 22 },
+    { "id": "lg-oled-c4",               "name": "LG Oled C4",                "priceCents": 100000, "stock": 7 },
+    { "id": "sony-bravia-9-mini-led",   "name": "Sony Bravia 9 Mini Led",    "priceCents": 200000, "stock": 5 },
+    { "id": "bluetooth-speaker",        "name": "Bluetooth Speaker",         "priceCents": 5000,   "stock": 50 },
+    { "id": "soundbar",                 "name": "Soundbar",                  "priceCents": 30000,  "stock": 18 },
+    { "id": "jbl-boombox-speaker",      "name": "JBL Boombox Speaker",       "priceCents": 40000,  "stock": 16 },
+    { "id": "jbl-partybox-110",         "name": "JBL PartyBox 110",          "priceCents": 60000,  "stock": 11 }
+  ]
+}
