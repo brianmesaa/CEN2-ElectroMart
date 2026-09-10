@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="shortcut icon" href="Pictures/ElectroMart.png" type="image/x-icon" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ElectroMart - Admin Inventory</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .admin-wrapper {
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    .admin-msg-box {
+      margin: 1rem 0;
+      padding: 0.75rem 1rem;
+      border-radius: 4px;
+      font-weight: bold;
+      display: none;
+    }
+
+    .admin-msg-box.visible {
+      display: block;
+    }
+
+    .admin-msg-box.loading {
+      background-color: #e2e3e5;
+      color: #383d41;
+      border: 1px solid #d6d8db;
+    }
+
+    .admin-msg-box.success {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .admin-msg-box.validation {
+      background-color: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffeeba;
+    }
+
+    .admin-msg-box.unauthorized {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .admin-msg-box.server-error {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .admin-dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .admin-table-container {
+      overflow-x: auto;
+      background-color: #fff;
+      border-radius: 6px;
+      margin-top: 1rem;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .admin-table th,
+    .admin-table td {
+      border: 1px solid #ddd;
+      padding: 0.75rem;
+      text-align: center;
+    }
+
+    .admin-table thead {
+      background-color: #333;
+      color: #fff;
+    }
+
+    .qty-input {
+      width: 80px;
+      padding: 0.4rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      text-align: center;
+    }
+
+    .action-cell {
+      white-space: nowrap;
+    }
+  </style>
+</head>
+
+<body class="homepage">
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="navbar_container">
+      <a href="index.html" id="navbar_logo">
+        <img src="Pictures/ElectroMart.png" class="logo" alt="ElectroMart Logo" />
+      </a>
+      <div class="navbar_toggle" id="mobile-menu">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+      </div>
+      <ul class="navbar_menu">
+        <li class="navbar_item">
+          <a href="#" class="navbar_link" id="categoriesLink">Categories</a>
+        </li>
+        <li class="navbar_item">
+          <a href="profile.html" class="navbar_link">Profile</a>
+        </li>
+        <li class="navbar_item">
+          <a href="shoppingCart.html" class="navbar_link">Shopping Cart</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- OVERLAY for categories -->
+  <div id="categoriesOverlay" class="overlay">
+    <button class="closeOverlayBtn" id="closeOverlayBtn">&times;</button>
+    <h2>Shop by Category</h2>
+    <ul>
+      <li><a href="category-laptops.html">Laptops</a></li>
+      <li><a href="category-tvs.html">TVs</a></li>
+      <li><a href="category-speakers.html">Speakers</a></li>
+    </ul>
+  </div>
+
+  <div class="admin-wrapper">
+    <!-- Status message boxes -->
+    <div id="adminMessage" class="admin-msg-box" role="status" aria-live="polite"></div>
+
+    <!-- ADMIN LOGIN FORM -->
+    <div id="adminLoginSection" class="form-container">
+      <h2>Admin Login</h2>
+      <label for="adminEmailField">Email:</label>
+      <input type="email" id="adminEmailField" placeholder="Enter admin email" autocomplete="email" />
+
+      <label for="adminPasswordField">Password:</label>
+      <input type="password" id="adminPasswordField" placeholder="Enter admin password" autocomplete="current-password" />
+
+      <button id="adminLoginBtn" class="add-to-cart-btn" style="width: 100%; margin-top: 0.5rem;">Login</button>
+    </div>
+
+    <!-- ADMIN INVENTORY DASHBOARD -->
+    <div id="adminDashboardSection" style="display: none;">
+      <div class="admin-dashboard-header">
+        <div>
+          <h2>Inventory Management</h2>
+          <p>Logged in as: <strong id="adminEmailDisplay"></strong></p>
+        </div>
+        <div>
+          <button id="adminLogoutBtn">Logout</button>
+        </div>
+      </div>
+
+      <div class="admin-table-container">
+        <table class="admin-table" id="inventoryTable">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Price</th>
+              <th>Current Stock</th>
+              <th>Quantity to Add</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="inventoryTableBody">
+            <!-- Populated dynamically by JavaScript -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      /* ==================== NAVBAR / OVERLAY ==================== */
+      const categoriesLink = document.getElementById("categoriesLink");
+      const categoriesOverlay = document.getElementById("categoriesOverlay");
+      const closeOverlayBtn = document.getElementById("closeOverlayBtn");
+
+      if (categoriesLink && categoriesOverlay) {
+        categoriesLink.addEventListener("click", (e) => {
+          e.preventDefault();
+          categoriesOverlay.classList.add("show");
+        });
+      }
+
+      if (closeOverlayBtn && categoriesOverlay) {
+        closeOverlayBtn.addEventListener("click", () => {
+          categoriesOverlay.classList.remove("show");
+        });
+      }
+
+      const menu = document.querySelector(".navbar_menu");
+      const menuBtn = document.querySelector(".navbar_toggle");
+      if (menuBtn && menu) {
+        menuBtn.addEventListener("click", () => {
+          menu.classList.toggle("active");
+          menuBtn.classList.toggle("change");
+        });
+      }
+
+      /* ==================== DOM ELEMENTS ==================== */
+      const msgBox = document.getElementById("adminMessage");
+      const loginSection = document.getElementById("adminLoginSection");
+      const dashboardSection = document.getElementById("adminDashboardSection");
+      const emailField = document.getElementById("adminEmailField");
+      const passwordField = document.getElementById("adminPasswordField");
+      const loginBtn = document.getElementById("adminLoginBtn");
+      const logoutBtn = document.getElementById("adminLogoutBtn");
+      const emailDisplay = document.getElementById("adminEmailDisplay");
+      const tableBody = document.getElementById("inventoryTableBody");
+
+      /* ==================== MESSAGE HELPERS ==================== */
+      function showMessage(text, type) {
+        if (!msgBox) return;
+        msgBox.className = `admin-msg-box visible ${type}`;
+        msgBox.textContent = text;
+      }
+
+      function clearMessage() {
+        if (!msgBox) return;
+        msgBox.className = "admin-msg-box";
+        msgBox.textContent = "";
+      }
+
+      function formatCents(cents) {
+        const val = Number(cents || 0) / 100;
+        return val.toFixed(2);
+      }
+
+      function generateUUID() {
+        if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+          return crypto.randomUUID();
+        }
+        return "idemp-" + Date.now() + "-" + Math.random().toString(36).substring(2, 11);
+      }
+
+      async function parseErrorMessage(response) {
+        try {
+          const data = await response.json();
+          if (data && data.message) {
+            const details = Array.isArray(data.details) && data.details.length
+              ? ` (${data.details.join("; ")})`
+              : "";
+            return `${data.message}${details}`;
+          }
+        } catch (ignored) {}
+        return `Request failed with HTTP status ${response.status}.`;
+      }
+
+      /* ==================== VIEW TOGGLES ==================== */
+      function showLoginForm() {
+        if (loginSection) loginSection.style.display = "block";
+        if (dashboardSection) dashboardSection.style.display = "none";
+        if (passwordField) passwordField.value = "";
+      }
+
+      function showDashboard(email) {
+        if (loginSection) loginSection.style.display = "none";
+        if (dashboardSection) dashboardSection.style.display = "block";
+        if (emailDisplay) emailDisplay.textContent = email || "";
+      }
+
+      /* ==================== CHECK SESSION ON LOAD ==================== */
+      function checkSession() {
+        showMessage("Checking admin session...", "loading");
+        fetch("/api/admin/session", {
+          headers: { Accept: "application/json" }
+        })
+          .then(async (response) => {
+            if (response.ok) {
+              const data = await response.json();
+              clearMessage();
+              showDashboard(data.email);
+              loadProducts();
+            } else {
+              clearMessage();
+              showLoginForm();
+            }
+          })
+          .catch(() => {
+            clearMessage();
+            showLoginForm();
+          });
+      }
+
+      /* ==================== LOGIN ==================== */
+      if (loginBtn) {
+        loginBtn.addEventListener("click", (e) => {
+          e.preventDefault();
+          const email = emailField.value.trim();
+          const password = passwordField.value;
+
+          if (!email || !password) {
+            showMessage("Please enter both email and password.", "validation");
+            return;
+          }
+
+          showMessage("Logging in...", "loading");
+          loginBtn.disabled = true;
+
+          fetch("/api/admin/login", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json"
+            },
+            body: JSON.stringify({ email, password })
+          })
+            .then(async (response) => {
+              loginBtn.disabled = false;
+              if (response.ok) {
+                const data = await response.json();
+                clearMessage();
+                showDashboard(data.email);
+                loadProducts();
+              } else if (response.status === 401) {
+                showMessage("Invalid email or password.", "unauthorized");
+              } else if (response.status === 503) {
+                const msg = await parseErrorMessage(response);
+                showMessage(msg, "server-error");
+              } else {
+                const msg = await parseErrorMessage(response);
+                showMessage(msg, "server-error");
+              }
+            })
+            .catch((err) => {
+              loginBtn.disabled = false;
+              showMessage("Network error while attempting to log in: " + err.message, "server-error");
+            });
+        });
+      }
+
+      /* ==================== LOGOUT ==================== */
+      if (logoutBtn) {
+        logoutBtn.addEventListener("click", () => {
+          showMessage("Logging out...", "loading");
+
+          fetch("/api/admin/logout", {
+            method: "POST"
+          })
+            .then(async (response) => {
+              if (!response.ok) {
+                throw new Error(await parseErrorMessage(response));
+              }
+
+              showMessage("Logged out successfully.", "success");
+              showLoginForm();
+              if (tableBody) tableBody.innerHTML = "";
+            })
+            .catch((error) => {
+              showMessage(
+                "Logout failed: " + error.message,
+                "server-error"
+              );
+            });
+        });
+      }
+
+      /* ==================== LOAD PRODUCTS ==================== */
+      function loadProducts() {
+        showMessage("Loading products catalog...", "loading");
+        fetch("/api/products", {
+          headers: { Accept: "application/json" }
+        })
+          .then(async (response) => {
+            if (!response.ok) {
+              throw new Error(await parseErrorMessage(response));
+            }
+            return response.json();
+          })
+          .then((products) => {
+            clearMessage();
+            renderTable(products);
+          })
+          .catch((err) => {
+            showMessage("Failed to load products: " + err.message, "server-error");
+          });
+      }
+
+      function renderTable(products) {
+        if (!tableBody) return;
+        tableBody.innerHTML = "";
+
+        products.forEach((prod) => {
+          const row = document.createElement("tr");
+          row.setAttribute("data-product-id", prod.id);
+
+          // ID
+          const idCell = document.createElement("td");
+          idCell.textContent = prod.id;
+          row.appendChild(idCell);
+
+          // Name
+          const nameCell = document.createElement("td");
+          nameCell.className = "prod-name";
+          nameCell.textContent = prod.name;
+          row.appendChild(nameCell);
+
+          // Price
+          const priceCell = document.createElement("td");
+          priceCell.textContent = "$" + formatCents(prod.priceCents);
+          row.appendChild(priceCell);
+
+          // Stock
+          const stockCell = document.createElement("td");
+          stockCell.className = "stock-cell";
+          stockCell.textContent = prod.stock != null ? prod.stock : 0;
+          row.appendChild(stockCell);
+
+          // Quantity input
+          const inputCell = document.createElement("td");
+          const qtyInput = document.createElement("input");
+          qtyInput.type = "number";
+          qtyInput.min = "1";
+          qtyInput.step = "1";
+          qtyInput.className = "qty-input";
+          qtyInput.placeholder = "Qty";
+          inputCell.appendChild(qtyInput);
+          row.appendChild(inputCell);
+
+          // Action button
+          const actionCell = document.createElement("td");
+          actionCell.className = "action-cell";
+          const addBtn = document.createElement("button");
+          addBtn.className = "add-to-cart-btn add-stock-btn";
+          addBtn.textContent = "Add Stock";
+          addBtn.addEventListener("click", () => handleAddStock(prod.id, prod.name, qtyInput, addBtn));
+          actionCell.appendChild(addBtn);
+          row.appendChild(actionCell);
+
+          tableBody.appendChild(row);
+        });
+      }
+
+      /* ==================== ADD STOCK ==================== */
+      function handleAddStock(productId, productName, qtyInput, addBtn) {
+        const rawValue = qtyInput.value.trim();
+
+        if (!rawValue) {
+          showMessage("Please enter a quantity to add for " + productName + ".", "validation");
+          return;
+        }
+
+        // Check if value is a positive whole number
+        const num = Number(rawValue);
+        if (!Number.isInteger(num) || num <= 0) {
+          showMessage("Quantity must be a positive whole number.", "validation");
+          return;
+        }
+
+        const idempotencyKey = generateUUID();
+        showMessage("Adding " + num + " units of " + productName + "...", "loading");
+        addBtn.disabled = true;
+
+        fetch("/api/admin/inventory-adjustments", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Idempotency-Key": idempotencyKey,
+            Accept: "application/json"
+          },
+          body: JSON.stringify({
+            productId: productId,
+            quantity: num
+          })
+        })
+          .then(async (response) => {
+            addBtn.disabled = false;
+            if (response.ok) {
+              const res = await response.json();
+              const resultingStock = res.resultingStock != null ? res.resultingStock : res.stock;
+              const quantityAdded = res.quantityAdded != null ? res.quantityAdded : res.quantity;
+              const name = res.productName || res.name || productName;
+
+              // Update this product's row without reloading the page
+              const row = document.querySelector(`tr[data-product-id="${productId}"]`);
+              if (row) {
+                const stockCell = row.querySelector(".stock-cell");
+                if (stockCell) {
+                  stockCell.textContent = resultingStock;
+                }
+              }
+              qtyInput.value = "";
+
+              showMessage(
+                `Successfully added ${quantityAdded} units to ${name}. Current stock: ${resultingStock}.`,
+                "success"
+              );
+            } else if (response.status === 401) {
+              showMessage("Session expired or unauthorized. Please log in again.", "unauthorized");
+              showLoginForm();
+            } else if (response.status === 400) {
+              const msg = await parseErrorMessage(response);
+              showMessage("Validation error: " + msg, "validation");
+            } else if (response.status === 409) {
+              const msg = await parseErrorMessage(response);
+              showMessage("Conflict error: " + msg, "server-error");
+            } else {
+              const msg = await parseErrorMessage(response);
+              showMessage("Server error: " + msg, "server-error");
+            }
+          })
+          .catch((err) => {
+            addBtn.disabled = false;
+            showMessage("Network error while adding stock: " + err.message, "server-error");
+          });
+      }
+
+      // Initial session verification
+      checkSession();
+    });
+  </script>
+</body>
+
+</html>
