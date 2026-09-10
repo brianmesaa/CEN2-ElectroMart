@@ -106,7 +106,7 @@ public class CheckoutService {
             Map<String, IdempotencyRecord> idempotency = new LinkedHashMap<>(state.idempotency());
             idempotency.put(key, new IdempotencyRecord(key, requestHash, order.id()));
 
-            PersistentState next = new PersistentState(state.version(), inventory, orders, idempotency);
+            PersistentState next = new PersistentState(state.version(), inventory, orders, idempotency, state.adjustments());
             return StateRepository.TransactionResult.changed(next, new CheckoutResult(order, false));
         });
     }

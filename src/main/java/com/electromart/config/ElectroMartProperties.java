@@ -19,6 +19,9 @@ public class ElectroMartProperties {
     /** User that is allowed to see every order (kept from the original prototype behaviour). */
     private String adminUser = "bmesa@gmail.com";
 
+    /** Admin password. Never hardcoded or persisted to state file. */
+    private String adminPassword;
+
     public String getDataFile() {
         return dataFile;
     }
@@ -33,5 +36,17 @@ public class ElectroMartProperties {
 
     public void setAdminUser(String adminUser) {
         this.adminUser = adminUser;
+    }
+
+    public String getAdminPassword() {
+        return adminPassword;
+    }
+
+    public void setAdminPassword(String adminPassword) {
+        this.adminPassword = adminPassword;
+    }
+
+    public boolean hasAdminPassword() {
+        return adminPassword != null && !adminPassword.isBlank();
     }
 }

@@ -18,7 +18,7 @@ import java.util.function.Function;
  *
  * <p>Consequences:</p>
  * <ul>
- *   <li>Concurrent checkouts cannot oversell a product (the lock serializes them).</li>
+ *   <li>Concurrent checkouts and adjustments cannot lose updates or oversell a product (the lock serializes them).</li>
  *   <li>A failed or rejected operation leaves neither inventory nor orders changed.</li>
  *   <li>The file on disk and the in-memory state never diverge.</li>
  * </ul>
@@ -43,20 +43,37 @@ public class StateRepository {
         Optional<PersistentState> loaded = store.read();
         if (loaded.isEmpty()) {
             PersistentState initial = new PersistentState(
-                    PersistentState.CURRENT_VERSION, defaults.initialStock(), java.util.List.of(), Map.of());
+                    PersistentState.CURRENT_VERSION, defaults.initialStock(), java.util.List.of(), Map.of(), Map.of());
             store.write(initial);
             log.info("Initialized new ElectroMart state file from the catalog at {}", store.file());
             return initial;
         }
         PersistentState existing = loaded.get();
-        PersistentState reconciled = addMissingCatalogProducts(existing);
-        if (reconciled != existing) {
-            store.write(reconciled);
-            log.info("Added new catalog products to the existing state file at {}", store.file());
-            return reconciled;
+        boolean needsWrite = false;
+        PersistentState working = existing;
+        if (working.version() < PersistentState.CURRENT_VERSION) {
+            working = new PersistentState(
+                    PersistentState.CURRENT_VERSION,
+                    working.inventory(),
+                    working.orders(),
+                    working.idempotency(),
+                    working.adjustments());
+            needsWrite = true;
+            log.info("Migrated ElectroMart state file at {} from version {} to {}",
+                    store.file(), existing.version(), PersistentState.CURRENT_VERSION);
         }
-        log.info("Loaded ElectroMart state from {} ({} orders)", store.file(), existing.orders().size());
-        return existing;
+        PersistentState reconciled = addMissingCatalogProducts(working);
+        if (reconciled != working) {
+            working = reconciled;
+            needsWrite = true;
+            log.info("Added new catalog products to the existing state file at {}", store.file());
+        }
+        if (needsWrite) {
+            store.write(working);
+        } else {
+            log.info("Loaded ElectroMart state from {} ({} orders)", store.file(), working.orders().size());
+        }
+        return working;
     }
 
     /** Products added to the catalog after the state file was written start with their catalog stock. */
@@ -72,7 +89,7 @@ public class StateRepository {
         if (!changed) {
             return existing;
         }
-        return new PersistentState(existing.version(), merged, existing.orders(), existing.idempotency());
+        return new PersistentState(existing.version(), merged, existing.orders(), existing.idempotency(), existing.adjustments());
     }
 
     /** The current (immutable) state snapshot. */

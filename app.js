@@ -51,9 +51,9 @@ document.addEventListener("DOMContentLoaded", () => {
   /* ==================== API HELPERS ==================== */
   let catalogPromise = null;
 
-  // The catalog is fetched once per page and cached.
-  function loadCatalog() {
-    if (!catalogPromise) {
+  // The catalog is fetched and cached, or re-fetched if forceRefresh is true.
+  function loadCatalog(forceRefresh = false) {
+    if (forceRefresh || !catalogPromise) {
       catalogPromise = fetch(`${API_BASE}/products`, { headers: { Accept: "application/json" } })
         .then((response) => {
           if (!response.ok) {
@@ -212,33 +212,55 @@ document.addEventListener("DOMContentLoaded", () => {
     saveCart(cart);
   }
 
-  /* ============ PRODUCT PAGES: keep displayed prices in sync with the catalog ============ */
-  if (addToCartButtons.length > 0) {
-    loadCatalog()
+  /* ============ PRODUCT PAGES: keep displayed prices and stock availability in sync with the catalog ============ */
+  function syncProductAvailability() {
+    const buttons = document.querySelectorAll(".add-to-cart-btn");
+    if (buttons.length === 0) return Promise.resolve();
+
+    return loadCatalog(true)
       .then((catalog) => {
         const byId = productsById(catalog);
-        addToCartButtons.forEach((btn) => {
-          const product = byId[btn.getAttribute("data-product-id")];
+        buttons.forEach((btn) => {
+          const productId = btn.getAttribute("data-product-id");
+          const product = byId[productId];
           const card = btn.closest(".product-card");
-          if (!product || !card) return;
-          const priceParagraph = Array.prototype.find.call(
-            card.querySelectorAll("p"),
-            (p) => /price\s*:/i.test(p.textContent)
-          );
-          if (priceParagraph) {
-            const cents = Number(product.priceCents || 0);
-            const pretty = cents % 100 === 0 ? String(cents / 100) : formatCents(cents);
-            priceParagraph.textContent = `Price: $${pretty}`;
+          if (!product) return;
+          if (card) {
+            const priceParagraph = Array.prototype.find.call(
+              card.querySelectorAll("p"),
+              (p) => /price\s*:/i.test(p.textContent)
+            );
+            if (priceParagraph) {
+              const cents = Number(product.priceCents || 0);
+              const pretty = cents % 100 === 0 ? String(cents / 100) : formatCents(cents);
+              priceParagraph.textContent = `Price: $${pretty}`;
+            }
           }
-          if (Number(product.stock) <= 0) {
+          const stock = Number(product.stock != null ? product.stock : 0);
+          if (stock <= 0) {
             btn.disabled = true;
             btn.textContent = "Out of Stock";
+          } else {
+            btn.disabled = false;
+            btn.textContent = "Add to Cart";
           }
         });
       })
       .catch(() => {
         // Offline or backend down: keep the statically rendered prices, page still works.
       });
+  }
+
+  if (addToCartButtons.length > 0) {
+    syncProductAvailability();
+    window.addEventListener("focus", () => {
+      syncProductAvailability();
+    });
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") {
+        syncProductAvailability();
+      }
+    });
   }
 
   /* ==================== SHOPPING CART PAGE ==================== */

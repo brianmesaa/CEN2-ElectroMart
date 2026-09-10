@@ -1,12 +1,13 @@
 package com.electromart.persistence;
 
+import com.electromart.domain.IdempotencyRecord;
+import com.electromart.domain.InventoryAdjustmentRecord;
+import com.electromart.domain.Order;
+import com.electromart.domain.OrderLine;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.electromart.domain.IdempotencyRecord;
-import com.electromart.domain.Order;
-import com.electromart.domain.OrderLine;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -130,6 +131,18 @@ public class JsonStateStore {
             if (record == null || record.orderId() == null || record.requestHash() == null) {
                 throw new StateFileException("State file '" + file + "' contains an incomplete idempotency record for key '"
                         + entry.getKey() + "'.");
+            }
+        }
+        if (state.adjustments() != null) {
+            for (Map.Entry<String, InventoryAdjustmentRecord> entry : state.adjustments().entrySet()) {
+                InventoryAdjustmentRecord record = entry.getValue();
+                if (record == null || record.key() == null || record.key().isBlank()
+                        || record.productId() == null || record.productId().isBlank()
+                        || record.productName() == null || record.productName().isBlank()
+                        || record.quantityAdded() <= 0 || record.resultingStock() < 0) {
+                    throw new StateFileException("State file '" + file + "' contains an incomplete adjustment record for key '"
+                            + entry.getKey() + "'.");
+                }
             }
         }
     }

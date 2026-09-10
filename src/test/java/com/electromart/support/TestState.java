@@ -6,6 +6,7 @@ import com.electromart.persistence.PersistentState;
 import com.electromart.persistence.StateRepository;
 import com.electromart.service.CatalogService;
 import com.electromart.service.CheckoutService;
+import com.electromart.service.InventoryAdjustmentService;
 
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
@@ -30,7 +31,7 @@ public final class TestState {
         if (stock != null && !stock.isEmpty()) {
             Map<String, Integer> inventory = new LinkedHashMap<>(catalog().initialStock());
             inventory.putAll(stock);
-            store.write(new PersistentState(PersistentState.CURRENT_VERSION, inventory, List.of(), Map.of()));
+            store.write(new PersistentState(PersistentState.CURRENT_VERSION, inventory, List.of(), Map.of(), Map.of()));
         }
         return new StateRepository(store, catalog());
     }
@@ -41,6 +42,10 @@ public final class TestState {
 
     public static CheckoutService checkoutService(StateRepository repository) {
         return new CheckoutService(catalog(), repository);
+    }
+
+    public static InventoryAdjustmentService adjustmentService(StateRepository repository) {
+        return new InventoryAdjustmentService(catalog(), repository);
     }
 
     public static Order onlyOrder(StateRepository repository) {
